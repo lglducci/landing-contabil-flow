@@ -6,17 +6,164 @@
     <title>Contábil Flow</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+ // {/*homologacao*/}
+ // const supabaseClient = supabase.createClient(
+ //   "https://wrcbwzdetumcdpayofkc.supabase.co",
+ //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2J3emRldHVtY2RwYXlvZmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNzYzODEsImV4cCI6MjA2Nzk1MjM4MX0.rNis-laavbueGPtMjD8e7hPqBKq30KJtLLq2vDLNMJA"
+ // );
+
+
+  // {/*desenvolvimento*/}
+  const supabaseClient = supabase.createClient(
+     "https://luznuqlvseaoztbvfwst.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1em51cWx2c2Vhb3p0YnZmd3N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYwMzgzMDQsImV4cCI6MjA2MTYxNDMwNH0.iCS-DHDg_EY362klk1gj3sh_jv2uIS0z0EeePjeS-XY"
+ 
+  );
+
+ 
+
+  
+</script>
+
+ <script>
+async function cadastrar(event) {
+  event.preventDefault();
+
+  console.log("clicou"); // ← se isso não aparecer, o form não chamou
+
+  const nome = document.getElementById("nome").value.trim();
+  const cpf = document.getElementById("cpf").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value;
+  const telefone = document.getElementById("telefone").value.trim();
+  
+  const msg_benvindo = document.getElementById("msg");
+ msg_benvindo.innerText = "🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.";
+msg_benvindo.classList.remove("hidden");
+
+
+  console.log("dados:", nome, email);
+
+  // 1️⃣ tenta criar
+  let { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password: senha
+  });
+
+  // 2️⃣ se já existir → login
+  if (error && error.message.includes("already")) {
+    const login = await supabaseClient.auth.signInWithPassword({
+      email,
+      password: senha
+    });
+
+    if (login.error) {
+      alert("Usuário existe, senha incorreta");
+      return;
+    }
+
+    data = login.data;
+  } else if (error) {
+    alert(error.message);
+    return;
+  }
+
+  const userId = data.user.id;
+
+ const res = await supabaseClient
+  .schema("saas_vendas")
+  .from("usuarios")
+  .upsert({
+    auth_user_id: userId,
+    nome,
+    email,
+    cpf,
+    senha_hash:senha, // deixa como está por enquanto
+    telefone,
+    status: "trial",
+    plano: "trial",
+    ativo: true,
+    trial_inicio: new Date().toISOString(),
+    trial_fim: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+  })
+  .select();
+
+console.log("UPSERT RESULT:", res);
+
+if (res.error) {
+  alert("ERRO UPSERT: " + res.error.message);
+  return;
+}
+
+if (!res.data || res.data.length === 0) {
+  alert("UPSERT NÃO INSERIU NADA (data vazia)");
+  return;
+}
+  // limpa os campos
+document.getElementById("nome").value = "";
+document.getElementById("cpf").value = "";
+document.getElementById("email").value = "";
+document.getElementById("senha").value = "";
+document.getElementById("telefone").value = "";
+
+// mensagem de boas-vindas
+const msg = document.getElementById("msg");
+msg.innerText = "🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.";
+msg.classList.remove("hidden");
+
+// opcional: rolar pra mensagem
+msg.scrollIntoView({ behavior: "smooth" });
+ // 4️⃣ inicializa o sistema (public / contab)
+const { data: empresaId, error: erroBootstrap } =
+  await supabaseClient.rpc("proc_bootstrap_usuario", {
+    p_auth_user_id: userId,
+    p_nome_usuario: nome,
+    p_email: email
+  });
+
+if (erroBootstrap) {
+  alert("Erro ao inicializar o sistema: " + erroBootstrap.message);
+  return;
+}
+setMensagem("🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.");
+
+console.log("Sistema inicializado. Empresa:", empresaId);
+
+  alert("Cadastro realizado com sucesso");
+}
+</script>
+
+ 
+
+  
+
   <body class="bg-[#f9fafb] text-gray-800">
     <!-- HERO -->
     <section class="bg-[#0F172A] text-white py-20 px-6 text-center">
-      <h1 class="text-4xl md:text-5xl font-bold mb-6">Contábil Flow</h1>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">Contábil Flow </h1>
       <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8">
         O sistema contábil completo para pequenas e médias empresas. Emita lançamentos, gere relatórios, automatize sua contabilidade e controle financeiro com facilidade.
       </p>
       <a href="#cadastro" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg">
         Teste grátis por 7 dias
       </a>
+
+       <div class="mt-6 text-sm">
+          Já tem conta?
+          <a
+            href="https://finance-flow-woad-xi.vercel.app/"
+            class="font-semibold text-orange-400 hover:underline"
+          >
+            Entrar no sistema
+          </a>
+        </div>  
     </section>
+
+    
 
     <!-- VANTAGENS -->
     <section class="py-16 px-6 max-w-6xl mx-auto text-center">
@@ -34,33 +181,132 @@
           <h3 class="text-xl font-semibold mb-2">🔐 Acesso seguro e multiempresa</h3>
           <p class="text-gray-600">Controle total de usuários e negócios com login por empresa.</p>
         </div>
+         <div >
+            <h3  class="text-xl font-semibold mb-2">🧠 Inteligência contábil</h3>
+            <p className="text-sm text-gray-800 leading-snug">
+              Cada lançamento é analisado por <strong>orientadores inteligentes</strong> que identificam inconsistências.
+              <br /> 
+            </p>
+          </div>
+
+
       </div>
     </section>
 
-    <!-- VÍDEO -->
-    <section class="bg-white py-16 px-6 text-center">
-      <h2 class="text-3xl font-bold text-blue-900 mb-6">Veja o sistema em ação</h2>
-      <div class="aspect-w-16 aspect-h-9 max-w-4xl mx-auto">
-        <iframe class="w-full h-96" src="https://www.youtube.com/embed/SEU_VIDEO_ID" title="Demo Contábil Flow" frameborder="0" allowfullscreen></iframe>
-      </div>
-    </section>
+  
+     
+          <a
+            href="https://www.youtube.com/watch?v=IIx3xgZgub8"
+         target="_blank"
+            style="
+              display: inline-block;
+              padding: 12px 24px;
+              background-color: #1e40af;
+              color: white;
+              font-weight: bold;
+              text-decoration: none;
+              border-radius: 8px;
+              margin-left: 30%;
+            "
+          >
+            ▶️ Assistir 1- vídeo de demonstração
+          </a>
+
 
     <!-- CADASTRO -->
     <section id="cadastro" class="py-20 px-6 text-center bg-blue-50">
       <h2 class="text-3xl font-bold text-blue-900 mb-6">Cadastre-se e use grátis por 7 dias</h2>
-      <form class="max-w-xl mx-auto space-y-4">
-        <input type="text" placeholder="Seu nome" class="w-full p-3 border rounded" required />
-        <input type="email" placeholder="Seu e-mail" class="w-full p-3 border rounded" required />
-        <input type="password" placeholder="Crie uma senha" class="w-full p-3 border rounded" required />
+      <div id="msg" class="hidden mb-6 p-4 rounded-lg bg-green-100 text-green-800 font-semibold">
+</div>  
+
+   
+
+     <form class="max-w-xl mx-auto space-y-4" onsubmit="cadastrar(event)">
+         
+        <div id="mensagem-ok"
+            class="hidden bg-green-100 text-green-800 p-3 rounded text-center font-semibold"
+          >
+          </div>
+
+        <input id="nome" type="text" placeholder="Seu nome" class="w-full p-3 border rounded" required />
+          <input id="cpf" type="text" placeholder="Seu CPF" class="w-full p-3 border rounded" required />
+          <input id="email" type="email" placeholder="Seu e-mail" class="w-full p-3 border rounded" required />
+          <input id="senha" type="password" placeholder="Crie uma senha" class="w-full p-3 border rounded" required />
+          <input id="telefone" type="tel" placeholder="Seu telefone" class="w-full p-3 border rounded" required />
+
         <button type="submit" class="bg-blue-900 text-white font-bold py-3 px-6 rounded w-full hover:bg-blue-800">
           Começar agora
         </button>
       </form>
     </section>
 
-    <!-- RODAPÉ -->
-    <footer class="bg-[#0F172A] text-white py-10 text-center text-sm">
-      © 2026 Contábil Flow · Todos os direitos reservados
-    </footer>
+    <section class="py-20 bg-blue-50 text-center">
+  <h2 class="text-3xl font-bold text-blue-900 mb-6">
+    Comece agora sem compromisso
+  </h2>
+  <a
+    href="#cadastro"
+    class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg"
+  >
+    Criar conta gratuita
+  </a>
+</section>
+
+  <footer class="bg-[#0F172A] text-white py-10 px-6 text-sm">
+  <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+
+    <!-- SOBRE -->
+    <div>
+      <h4 class="font-semibold mb-2">Sobre</h4>
+      <p class="text-gray-300 leading-relaxed">
+        Sou <strong>Luis Gustavo Landucci</strong>, desenvolvedor de sistemas e criador do
+        <strong>Contábil Flow</strong>, uma plataforma de gestão contábil e financeira
+        voltada para pequenas e médias empresas.
+      </p>
+    </div>
+
+    <!-- CONTATO -->
+    <div>
+      <h4 class="font-semibold mb-2">Contato</h4>
+
+      <p class="text-gray-300 flex items-center gap-2 justify-center md:justify-start">
+        📧
+        <a href="mailto:lglducci@hotmail.com.br" class="hover:underline">
+          lglducci@hotmail.com.br
+        </a>
+      </p>
+
+      <p class="text-gray-300 flex items-center gap-2 justify-center md:justify-start mt-2">
+        <a
+          href="https://wa.me/5516992975836"
+          target="_blank"
+          class="flex items-center gap-2 hover:underline"
+        >
+          <img
+            src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg"
+            alt="WhatsApp"
+            style="width:16px; filter: invert(1);"
+          />
+          WhatsApp
+        </a>
+      </p>
+    </div>
+
+    <!-- LEGAL -->
+    <div>
+      <h4 class="font-semibold mb-2">Legal</h4>
+      <p class="text-gray-300">
+        © 2026 Contábil Flow<br />
+        Todos os direitos reservados
+      </p>
+      <p class="text-gray-400 mt-2">
+        Desenvolvido no Brasil 🇧🇷
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+    
   </body>
 </html>
