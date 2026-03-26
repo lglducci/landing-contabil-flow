@@ -11,18 +11,18 @@
 
 <script>
  // {/*homologacao*/}
-  const supabaseClient = supabase.createClient(
-    "https://wrcbwzdetumcdpayofkc.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2J3emRldHVtY2RwYXlvZmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNzYzODEsImV4cCI6MjA2Nzk1MjM4MX0.rNis-laavbueGPtMjD8e7hPqBKq30KJtLLq2vDLNMJA"
-  );
+ // const supabaseClient = supabase.createClient(
+ //   "https://wrcbwzdetumcdpayofkc.supabase.co",
+ //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2J3emRldHVtY2RwYXlvZmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNzYzODEsImV4cCI6MjA2Nzk1MjM4MX0.rNis-laavbueGPtMjD8e7hPqBKq30KJtLLq2vDLNMJA"
+ // );
 
 
   // {/*desenvolvimento*/}
- // const supabaseClient = supabase.createClient(
-  //   "https://luznuqlvseaoztbvfwst.supabase.co",
-  //  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx1em51cWx2c2Vhb3p0YnZmd3N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYwMzgzMDQsImV4cCI6MjA2MTYxNDMwNH0.iCS-DHDg_EY362klk1gj3sh_jv2uIS0z0EeePjeS-XY"
+  const supabaseClient = supabase.createClient(
+     "https://ioxkdrxesdiqixziujyr.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlveGtkcnhlc2RpcWl4eml1anlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0OTQ1MDcsImV4cCI6MjA4NjA3MDUwN30.i-SUK22op43tWZgAQY6WVjzOrW9txXpCU5Vp-RDO9P4"
  
-//  );
+  );
 
  
 
@@ -30,31 +30,25 @@
 </script>
 
  <script>
-async function cadastrar(event) {
+ async function cadastrar(event) {
   event.preventDefault();
 
-  console.log("clicou"); // ← se isso não aparecer, o form não chamou
-
   const nome = document.getElementById("nome").value.trim();
-  const cpf = document.getElementById("cpf").value.trim();
   const email = document.getElementById("email").value.trim();
   const senha = document.getElementById("senha").value;
   const telefone = document.getElementById("telefone").value.trim();
-  
-  const msg_benvindo = document.getElementById("msg");
- msg_benvindo.innerText = "🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.";
-msg_benvindo.classList.remove("hidden");
 
+  if (!nome || !email || !senha || !telefone) {
+    alert("Preencha todos os campos");
+    return;
+  }
 
-  console.log("dados:", nome, email);
-
-  // 1️⃣ tenta criar
   let { data, error } = await supabaseClient.auth.signUp({
     email,
     password: senha
   });
 
-  // 2️⃣ se já existir → login
+  // já existe → login
   if (error && error.message.includes("already")) {
     const login = await supabaseClient.auth.signInWithPassword({
       email,
@@ -62,7 +56,7 @@ msg_benvindo.classList.remove("hidden");
     });
 
     if (login.error) {
-      alert("Usuário existe, senha incorreta");
+      alert("Usuário já existe e senha incorreta");
       return;
     }
 
@@ -72,68 +66,57 @@ msg_benvindo.classList.remove("hidden");
     return;
   }
 
-  const userId = data.user.id;
+  // mensagem
+  const msg = document.getElementById("msg");
+  msg.innerText = "🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.";
+  msg.classList.remove("hidden");
 
- const res = await supabaseClient
-  .schema("saas_vendas")
-  .from("usuarios")
-  .upsert({
-    auth_user_id: userId,
-    nome,
-    email,
-    cpf,
-    senha_hash:senha, // deixa como está por enquanto
-    telefone,
-    status: "trial",
-    plano: "trial",
-    ativo: true,
-    trial_inicio: new Date().toISOString(),
-    trial_fim: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-  })
-  .select();
+  // limpa
+  document.getElementById("nome").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("senha").value = "";
+  document.getElementById("telefone").value = "";
 
-console.log("UPSERT RESULT:", res);
-
-if (res.error) {
-  alert("ERRO UPSERT: " + res.error.message);
-  return;
-}
-
-if (!res.data || res.data.length === 0) {
-  alert("UPSERT NÃO INSERIU NADA (data vazia)");
-  return;
-}
-  // limpa os campos
-document.getElementById("nome").value = "";
-document.getElementById("cpf").value = "";
-document.getElementById("email").value = "";
-document.getElementById("senha").value = "";
-document.getElementById("telefone").value = "";
-
-// mensagem de boas-vindas
-const msg = document.getElementById("msg");
-msg.innerText = "🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.";
-msg.classList.remove("hidden");
-
-// opcional: rolar pra mensagem
-msg.scrollIntoView({ behavior: "smooth" });
- // 4️⃣ inicializa o sistema (public / contab)
-const { data: empresaId, error: erroBootstrap } =
-  await supabaseClient.rpc("proc_bootstrap_usuario", {
-    p_auth_user_id: userId,
-    p_nome_usuario: nome,
-    p_email: email
-  });
-
-if (erroBootstrap) {
-  alert("Erro ao inicializar o sistema: " + erroBootstrap.message);
-  return;
-}
-setMensagem("🎉 Bem-vindo! Seu teste grátis de 7 dias já está ativo.");
-
-console.log("Sistema inicializado. Empresa:", empresaId);
+  msg.scrollIntoView({ behavior: "smooth" });
 
   alert("Cadastro realizado com sucesso");
+}
+
+function maskTelefone(value) {
+  let v = value.replace(/\D/g, "");
+
+  if (!v.startsWith("55")) {
+    v = "55" + v;
+  }
+
+  v = v.substring(0, 13);
+
+  v = v.replace(/^(\d{2})(\d)/, "+$1 $2");
+  v = v.replace(/^(\+\d{2})\s(\d{2})(\d)/, "$1 ($2) $3");
+  v = v.replace(/(\d{5})(\d{4})$/, "$1-$2");
+
+  return v;
+}
+
+function toggleSenha() {
+  const input = document.getElementById("senha");
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function maskTelefone(value) {
+  let v = value.replace(/\D/g, "");
+
+  if (!v.startsWith("55")) {
+    v = "55" + v;
+  }
+
+  v = v.substring(0, 13);
+
+  v = v.replace(/^(\d{2})(\d)/, "+$1 $2");
+  v = v.replace(/^(\+\d{2})\s(\d{2})(\d)/, "$1 ($2) $3");
+  v = v.replace(/(\d{5})(\d{4})$/, "$1-$2");
+
+  return v;
 }
 </script>
 
@@ -155,7 +138,7 @@ console.log("Sistema inicializado. Empresa:", empresaId);
        <div class="mt-6 text-sm">
           Já tem conta?
           <a
-            href="https://finance-flow-woad-xi.vercel.app/"
+            href= "https://contabil-flow.lglducci.com.br/login"
             class="font-semibold text-orange-400 hover:underline"
           >
             Entrar no sistema
@@ -229,14 +212,41 @@ console.log("Sistema inicializado. Empresa:", empresaId);
           </div>
 
         <input id="nome" type="text" placeholder="Seu nome" class="w-full p-3 border rounded" required />
-          <input id="cpf" type="text" placeholder="Seu CPF" class="w-full p-3 border rounded" required />
+        
           <input id="email" type="email" placeholder="Seu e-mail" class="w-full p-3 border rounded" required />
-          <input id="senha" type="password" placeholder="Crie uma senha" class="w-full p-3 border rounded" required />
-          <input id="telefone" type="tel" placeholder="Seu telefone" class="w-full p-3 border rounded" required />
+           <div class="relative">
+              <input
+                id="senha"
+                type="password"
+                placeholder="Crie uma senha"
+                class="w-full p-3 border rounded"
+                required
+              />
+              
+              <button
+                type="button"
+                onclick="toggleSenha()"
+                class="absolute right-3 top-3 text-sm text-gray-500"
+              >
+                👁
+              </button>
+            </div>
+  
+          <input
+              id="telefone"
+              type="tel"
+              placeholder="Seu telefone"
+              class="w-full p-3 border rounded"
+              oninput="this.value = maskTelefone(this.value)"
+              required
+            />
 
         <button type="submit" class="bg-blue-900 text-white font-bold py-3 px-6 rounded w-full hover:bg-blue-800">
           Começar agora
         </button>
+
+         
+
       </form>
     </section>
 
@@ -310,4 +320,3 @@ console.log("Sistema inicializado. Empresa:", empresaId);
     
   </body>
 </html>
-
