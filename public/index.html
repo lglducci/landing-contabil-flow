@@ -11,18 +11,18 @@
 
 <script>
  // {/*homologacao*/}
-  const supabaseClient = supabase.createClient(
+   const supabaseClient = supabase.createClient(
     "https://wrcbwzdetumcdpayofkc.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2J3emRldHVtY2RwYXlvZmtjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzNzYzODEsImV4cCI6MjA2Nzk1MjM4MX0.rNis-laavbueGPtMjD8e7hPqBKq30KJtLLq2vDLNMJA"
- );
+   );
 
 
   // {/*desenvolvimento*/}
- // const supabaseClient = supabase.createClient(
+///  const supabaseClient = supabase.createClient(
   //   "https://ioxkdrxesdiqixziujyr.supabase.co",
  //   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlveGtkcnhlc2RpcWl4eml1anlyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0OTQ1MDcsImV4cCI6MjA4NjA3MDUwN30.i-SUK22op43tWZgAQY6WVjzOrW9txXpCU5Vp-RDO9P4"
  
-//  );
+  //);
 
  
 
@@ -129,12 +129,13 @@ function maskTelefone(value) {
     <section class="bg-[#0F172A] text-white py-20 px-6 text-center">
       <h1 class="text-4xl md:text-5xl font-bold mb-6">Contábil Flow </h1>
       <p class="text-lg md:text-xl max-w-2xl mx-auto mb-8">
-        O sistema contábil completo para pequenas e médias empresas. Emita lançamentos, gere relatórios, automatize sua contabilidade e controle financeiro com facilidade.
+        Controle seu dinheiro, organize suas contas e entenda sua empresa — sem ser contador.
       </p>
-      <a href="#cadastro" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg">
-        Teste grátis por 7 dias
-      </a>
 
+      <p class="text-sm text-gray-300 mt-4">
+        Pare de ficar perdido no fim do mês. Veja exatamente para onde seu dinheiro está indo.
+      </p>
+     
        <div class="mt-6 text-sm">
           Já tem conta?
           <a
@@ -144,40 +145,65 @@ function maskTelefone(value) {
             Entrar no sistema
           </a>
         </div>  
+         <div class="mt-6 text-sm"> 
+          <a href="#cadastro" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-lg">
+            Teste grátis por 7 dias
+          </a>
+         </div>
     </section>
-
     
+
+    <section class="py-12 px-6 text-center">
+  <h2 class="text-2xl font-bold mb-6 text-blue-900">
+    Esse sistema é para você que:
+  </h2>
+
+  <div class="space-y-2 text-gray-700">
+    <p>✔ Não sabe se está tendo lucro</p>
+    <p>✔ Mistura dinheiro pessoal com empresa</p>
+    <p>✔ Usa planilha e se perde</p>
+    <p>✔ Quer controle simples e rápido</p>
+  </div>
+</section>
 
     <!-- VANTAGENS -->
     <section class="py-16 px-6 max-w-6xl mx-auto text-center">
       <h2 class="text-3xl font-bold mb-10 text-blue-900">Por que escolher o Contábil Flow?</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <h3 class="text-xl font-semibold mb-2">✅ Lançamentos contábeis automatizados</h3>
+          <h3 class="text-xl font-semibold mb-2">
+            💰 Controle total do seu dinheiro
+          </h3>
+          <p class="text-gray-600">
+            Saiba exatamente quanto entra, quanto sai e quanto sobra.
+          </p>
           <p class="text-gray-600">Modelos prontos para facilitar sua rotina financeira e contábil.</p>
         </div>
         <div>
-          <h3 class="text-xl font-semibold mb-2">📊 Relatórios profissionais</h3>
+              <h3 class="text-xl font-semibold mb-2">
+              📊 Veja seu lucro real
+            </h3>
+            <p class="text-gray-600">
+              Descubra se sua empresa está ganhando ou perdendo dinheiro.
+            </p>
           <p class="text-gray-600">Balancetes, razão, DRE e mais. Tudo em poucos cliques.</p>
         </div>
         <div>
           <h3 class="text-xl font-semibold mb-2">🔐 Acesso seguro e multiempresa</h3>
           <p class="text-gray-600">Controle total de usuários e negócios com login por empresa.</p>
         </div>
-         <div >
-            <h3  class="text-xl font-semibold mb-2">🧠 Inteligência contábil</h3>
-            <p className="text-sm text-gray-800 leading-snug">
-              Cada lançamento é analisado por <strong>orientadores inteligentes</strong> que identificam inconsistências.
-              <br /> 
-            </p>
-          </div>
+         <h3 class="text-xl font-semibold mb-2">
+            🤖 Tire dúvidas com um contador inteligente
+          </h3>
+          <p class="text-gray-600">
+            Pergunte e entenda sua empresa sem precisar de conhecimento técnico.
+          </p>
 
 
       </div>
     </section>
-
-  
-     
+ 
+                  
           <a
             href="https://www.youtube.com/watch?v=IIx3xgZgub8"
          target="_blank"
@@ -192,10 +218,34 @@ function maskTelefone(value) {
               margin-left: 30%;
             "
           >
-            ▶️ Assistir 1- vídeo de demonstração
+             ▶️ Veja como descobrir seu lucro em 2 minutos
           </a>
 
+        <section class="py-16 bg-gray-100 text-center">
 
+  <h2 class="text-2xl font-bold mb-4 text-blue-900">
+    Veja como funciona na prática
+  </h2>
+
+  <p class="text-gray-600 mb-8">
+    Em poucos cliques você já entende seu dinheiro e seu lucro
+  </p>
+
+  <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
+
+    <div>
+      <p class="text-sm mb-2 text-gray-500">Controle financeiro</p>
+      <img src="image.png" class="rounded shadow-lg max-w-sm" />
+    </div>
+
+    <div>
+      <p class="text-sm mb-2 text-gray-500">Visão do seu resultado</p>
+      <img src="dashboard.png" class="rounded shadow-lg max-w-sm" />
+    </div>
+
+  </div>
+
+</section>
     <!-- CADASTRO -->
     <section id="cadastro" class="py-20 px-6 text-center bg-blue-50">
       <h2 class="text-3xl font-bold text-blue-900 mb-6">Cadastre-se e use grátis por 7 dias</h2>
@@ -241,6 +291,11 @@ function maskTelefone(value) {
               required
             />
 
+            
+             <p class="text-sm text-gray-600">
+                Leva menos de 1 minuto. Sem cartão de crédito.
+              </p>
+
         <button type="submit" class="bg-blue-900 text-white font-bold py-3 px-6 rounded w-full hover:bg-blue-800">
           Começar agora
         </button>
@@ -254,13 +309,27 @@ function maskTelefone(value) {
   <h2 class="text-3xl font-bold text-blue-900 mb-6">
     Comece agora sem compromisso
   </h2>
+
+  <section class="py-16 text-center">
+  <h2 class="text-2xl font-bold mb-6 text-blue-900">
+    Veja como funciona na prática
+  </h2>
+ 
+</section>
+
   <a
     href="#cadastro"
-    class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg"
+    class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-lg mt-4"
   >
     Criar conta gratuita
   </a>
-</section>
+
+  
+</section> 
+
+<p class="text-center text-gray-700 mt-10">
+  Mais controle. Mais clareza. Mais lucro.
+</p>
 
   <footer class="bg-[#0F172A] text-white py-10 px-6 text-sm">
   <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
@@ -315,8 +384,26 @@ function maskTelefone(value) {
     </div>
 
   </div>
+ 
 </footer>
 
     
   </body>
+
+  <a href="https://wa.me/5516992975836"
+   target="_blank"
+   style="
+     position: fixed;
+     bottom: 20px;
+     right: 20px;
+     background: #25D366;
+     color: white;
+     padding: 12px 16px;
+     border-radius: 50px;
+     font-weight: bold;
+     z-index: 999;
+     text-decoration: none;
+   ">
+   WhatsApp
+</a>
 </html>
